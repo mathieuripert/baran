@@ -20,4 +20,32 @@ class TestRecursiveCharacterTextSplitter < MiniTest::Unit::TestCase
 
     assert_equal(chunks.length, 6)
   end
+
+  def test_with_regexp_separators
+    separators = [
+      /\n# /,
+      /\n## /,
+      /\n### /,
+    ]
+    splitter = Baran::RecursiveCharacterTextSplitter.new(
+      chunk_size: 24, 
+      chunk_overlap: 0, 
+      separators: separators
+    )
+    text = <<~TEXT
+    # Header 1
+    Text 1
+    ## Header 2
+    Text 2
+    ### Header 3
+    Text 3
+    TEXT
+    chunks = splitter.chunks(text)
+  
+    # With chunk_size: 24, the algorithm splits at regexp separators and preserves them
+    assert_equal(chunks.length, 3)
+    assert_equal(chunks[0][:text], "# Header 1\nText 1")
+    assert_equal(chunks[1][:text], "## Header 2\nText 2")
+    assert_equal(chunks[2][:text], "### Header 3\nText 3")
+  end
 end

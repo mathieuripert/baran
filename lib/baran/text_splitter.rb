@@ -43,6 +43,40 @@ module Baran
       end
     end
 
+    def split_with_separator_preservation(text, separator)
+      if separator.is_a?(Regexp)
+        # For regexp separators, preserve the separator in the chunks
+        parts = text.split(separator)
+        matches = text.scan(separator)
+        
+        splits = []
+        
+        # First part (before any separator)
+        if parts.length > 0 && !parts[0].empty?
+          splits << parts[0]
+        end
+        
+        # Remaining parts with their separators
+        matches.each_with_index do |match, i|
+          part_index = i + 1
+          if part_index < parts.length
+            # Reconstruct the chunk with the separator (remove leading \n)
+            chunk = match.gsub(/^\n/, '') + parts[part_index]
+            splits << chunk unless chunk.empty?
+          end
+        end
+        
+        splits
+      else
+        # For string separators, use standard split
+        if separator.empty?
+          text.chars
+        else
+          text.split(separator)
+        end
+      end
+    end
+
     def merged(splits, separator)
       results = [] # Array of strings
       current_splits = [] # Array of strings

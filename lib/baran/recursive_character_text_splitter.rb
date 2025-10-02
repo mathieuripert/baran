@@ -15,13 +15,22 @@ module Baran
       separator = ''
 
       separators.each do |s|
-        if text.include?(s)
-          separator = s
-          break
+        if s.is_a?(Regexp)
+          if text.match?(s)
+            separator = s
+            break
+          end
+        else
+          if text.include?(s)
+            separator = s
+            break
+          end
         end
       end
 
-      text.split(separator).each do |s|
+      splits = split_with_separator_preservation(text, separator)
+      
+      splits.each do |s|
         if token_count(s) < chunk_size
           good_splits << s
         else

@@ -10,29 +10,28 @@ class TestMarkdownSplitter < MiniTest::Unit::TestCase
 
   def test_chunks
     text = <<~MARKDOWN
-# h1
+# Main Heading
+Content for main heading.
 
-## h2
+## Section 2
+Content for section 2.
 
-### h3
-
-#### h4
-
-##### h5
-
-###### h6
-
-```
-```
-
-***
+### Subsection
+Content for subsection.
 
 ---
+
+Final content.
 MARKDOWN
 
-    @splitter = Baran::MarkdownSplitter.new(chunk_size: 3, chunk_overlap: 1)
+    @splitter = Baran::MarkdownSplitter.new(chunk_size: 50, chunk_overlap: 5)
     chunks = @splitter.chunks(text)
 
-    assert_equal(13, chunks.length)
+    # Should split at each header and preserve the header markers
+    assert_equal(4, chunks.length)
+    assert_equal("# Main Heading\nContent for main heading.", chunks[0][:text])
+    assert_equal("## Section 2\nContent for section 2.", chunks[1][:text])
+    assert_equal("### Subsection\nContent for subsection.", chunks[2][:text])
+    assert_equal("---\nFinal content.", chunks[3][:text])
   end
 end
