@@ -22,6 +22,7 @@ module Baran
         return handle_text_with_tables(text, tables)
       end
 
+      # Find the first separator that matches
       separators.each do |s|
         if s.is_a?(Regexp)
           if text.match?(s)
@@ -29,14 +30,28 @@ module Baran
             break
           end
         else
-          if text.include?(s)
+          if s.is_a?(String) && text.include?(s)
             separator = s
             break
           end
         end
       end
 
+      # If no separator was found and character-level splitting is not in separators,
+      # preserve semantic integrity by returning text as-is
+      if separator == '' && !separators.include?('')
+        return [text]
+      end
+
       splits = split_with_separator_preservation(text, separator)
+      
+      # Check if we made meaningful progress in splitting
+      # If we only got one split back and it's the same as input, we can't split further
+      if splits.length == 1 && splits[0] == text && token_count(text) >= chunk_size
+        # Can't split this text with any available separators
+        # Return it as-is, even if it exceeds chunk_size
+        return [text]
+      end
       
       splits.each do |s|
         if token_count(s) < chunk_size
@@ -46,7 +61,15 @@ module Baran
             results += merged(good_splits, separator)
             good_splits.clear
           end
-          results += splitted(s)
+          
+          # Only recurse if we can make progress
+          # Check if this split is different from the original text
+          if s != text
+            results += splitted(s)
+          else
+            # Can't split further, keep as single chunk even if oversized
+            results << s
+          end
         end
       end
 

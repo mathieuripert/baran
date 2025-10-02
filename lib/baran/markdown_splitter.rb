@@ -15,6 +15,9 @@ module Baran
       /\n\n-{3,}\n\n/, # horizontal rule (---)
       /\n\n_{3,}\n\n/, # horizontal rule (___)
       "\n\n", # paragraph break
+      "\n", # line break
+      " ", # space
+      "" # character (fallback)
     ]
     
     def initialize(chunk_size: 1024, chunk_overlap: 64, token_count_fn: nil)

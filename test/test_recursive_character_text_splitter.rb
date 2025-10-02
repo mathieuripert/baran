@@ -48,4 +48,27 @@ class TestRecursiveCharacterTextSplitter < MiniTest::Unit::TestCase
     assert_equal(chunks[1][:text], "## Header 2\nText 2")
     assert_equal(chunks[2][:text], "### Header 3\nText 3")
   end
+
+  def test_prevents_infinite_recursion
+    page_separator = [Regexp.new("unknown")]
+
+    splitter = Baran::RecursiveCharacterTextSplitter.new(
+      chunk_size: 64,
+      chunk_overlap: 0,
+      separators: [page_separator],
+    )
+    
+    text = """
+    == Page 1 ==
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+    Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    == Page 2 ==
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+    Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    """
+    
+    # This should not cause a stack overflow
+    chunks = splitter.chunks(text)
+    assert chunks.length == 1, "Should generate one chunk"
+  end
 end

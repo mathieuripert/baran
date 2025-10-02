@@ -44,7 +44,7 @@ class TestTextSplitter < MiniTest::Unit::TestCase
     TEXT
     splitted = markdown_splitter.splitted(text)
     # With regexp separators, the behavior preserves separators and splits differently
-    assert_equal ["## Headin", "ng", "This is a", "a sample", "text\n---", "Another s", "section\""], splitted
+    assert_equal ["## Heading", "This is a", "a sample", "text", "---", "Another", "section\""], splitted
   end
 
   def test_chunks
