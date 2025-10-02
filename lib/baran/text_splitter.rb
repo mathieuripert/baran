@@ -2,11 +2,12 @@ require 'logger'
 
 module Baran
   class TextSplitter
-    attr_accessor :chunk_size, :chunk_overlap
+    attr_accessor :chunk_size, :chunk_overlap, :token_count_fn
 
-    def initialize(chunk_size: 1024, chunk_overlap: 64)
+    def initialize(chunk_size: 1024, chunk_overlap: 64, token_count_fn: nil)
       @chunk_size = chunk_size
       @chunk_overlap = chunk_overlap
+      @token_count_fn = token_count_fn
       raise "Cannot have chunk_overlap >= chunk_size" if @chunk_overlap >= @chunk_size
     end
 
@@ -34,23 +35,32 @@ module Baran
       text.empty? ? nil : text
     end
 
+    def token_count(text)
+      if @token_count_fn
+        @token_count_fn.call(text)
+      else
+        text.length
+      end
+    end
+
     def merged(splits, separator)
       results = [] # Array of strings
       current_splits = [] # Array of strings
       total = 0
 
       splits.each do |split|
-        if total + split.length >= chunk_size && current_splits.length.positive?
+        split_token_count = token_count(split)
+        if total + split_token_count >= chunk_size && current_splits.length.positive?
           results << joined(current_splits, separator)
 
-          while total > chunk_overlap || (total + split.length >= chunk_size && total.positive?)
-            total -= current_splits.first.length
+          while total > chunk_overlap || (total + split_token_count >= chunk_size && total.positive?)
+            total -= token_count(current_splits.first)
             current_splits.shift
           end
         end
 
         current_splits << split
-        total += split.length
+        total += split_token_count
         Logger.new(STDOUT).warn("Created a chunk of size #{total}, which is longer than the specified #{@chunk_size}") if total > @chunk_size
       end
 

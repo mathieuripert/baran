@@ -16,6 +16,7 @@ Baran provides efficient text splitting capabilities with the following key feat
 - **Overlap Management**: Maintain continuity between chunks with configurable overlap
 - **Context Preservation**: Respect semantic boundaries in text
 - **Metadata Support**: Attach metadata to each chunk
+- **Custom Token Counting**: Use word counting, LLM tokenizers, or any custom token counting method
 - **Multiple Splitting Strategies**: Character-based, recursive, sentence-based, and Markdown-aware splitting
 
 ## Installation
@@ -217,6 +218,232 @@ puts "Recursive: #{recursive_chunks.length} chunks"
 puts "Markdown-aware: #{md_chunks.length} chunks"
 ```
 
+## Custom Token Counting
+
+Baran supports custom token counting functions, allowing you to use different methods for measuring chunk sizes beyond simple character counting. This is particularly useful when working with LLM tokenizers or other token-based systems.
+
+### Basic Token Counting
+
+```ruby
+# Word counting instead of character counting
+word_counter = ->(text) { text.split(' ').length }
+splitter = Baran::RecursiveCharacterTextSplitter.new(
+  chunk_size: 100,        # 100 words instead of characters
+  chunk_overlap: 10,      # 10 words overlap
+  token_count_fn: word_counter
+)
+
+text = "This is a sample text that will be split based on word count."
+chunks = splitter.chunks(text)
+
+chunks.each do |chunk|
+  word_count = chunk[:text].split(' ').length
+  puts "Chunk: '#{chunk[:text]}' (#{word_count} words)"
+end
+```
+
+### LLM Token Counting
+
+#### Using tiktoken_ruby for OpenAI Models
+
+For accurate token counting with OpenAI GPT models, use the [tiktoken_ruby](https://github.com/IAPark/tiktoken_ruby) gem:
+
+```ruby
+require 'tiktoken_ruby'
+
+# Get the encoder for GPT-4
+encoder = Tiktoken.encoding_for_model("gpt-4")
+
+# Create a token counter function
+token_counter = ->(text) { encoder.encode(text).length }
+
+# Use with Baran splitters
+splitter = Baran::RecursiveCharacterTextSplitter.new(
+  chunk_size: 1000,       # 1000 tokens
+  chunk_overlap: 100,     # 100 tokens overlap
+  token_count_fn: token_counter
+)
+
+text = "Your long text that needs to be split into GPT-4 token-sized chunks..."
+chunks = splitter.chunks(text)
+
+chunks.each do |chunk|
+  token_count = encoder.encode(chunk[:text]).length
+  puts "Chunk: '#{chunk[:text]}' (#{token_count} tokens)"
+end
+```
+
+#### Using Different OpenAI Models
+
+```ruby
+require 'tiktoken_ruby'
+
+# For GPT-3.5-turbo
+gpt35_encoder = Tiktoken.encoding_for_model("gpt-3.5-turbo")
+gpt35_counter = ->(text) { gpt35_encoder.encode(text).length }
+
+# For GPT-4o
+gpt4o_encoder = Tiktoken.encoding_for_model("gpt-4o")
+gpt4o_counter = ->(text) { gpt4o_encoder.encode(text).length }
+
+# Use with different chunk sizes based on model context limits
+gpt35_splitter = Baran::RecursiveCharacterTextSplitter.new(
+  chunk_size: 2000,      # Smaller chunks for GPT-3.5
+  chunk_overlap: 200,
+  token_count_fn: gpt35_counter
+)
+
+gpt4o_splitter = Baran::RecursiveCharacterTextSplitter.new(
+  chunk_size: 4000,      # Larger chunks for GPT-4o
+  chunk_overlap: 400,
+  token_count_fn: gpt4o_counter
+)
+```
+
+#### Custom Token Counting (Fallback)
+
+If you don't have access to tiktoken_ruby, you can use a simplified approximation:
+
+```ruby
+# Rough approximation for OpenAI models
+def count_tokens(text)
+  # This is a simplified example - use tiktoken_ruby for accuracy
+  text.split(' ').length * 1.3  # Rough approximation
+end
+
+token_counter = ->(text) { count_tokens(text).to_i }
+splitter = Baran::RecursiveCharacterTextSplitter.new(
+  chunk_size: 1000,       # 1000 tokens
+  chunk_overlap: 100,     # 100 tokens overlap
+  token_count_fn: token_counter
+)
+```
+
+### All Splitter Types Support Token Counting
+
+```ruby
+require 'tiktoken_ruby'
+
+# Get encoder for accurate token counting
+encoder = Tiktoken.encoding_for_model("gpt-4")
+token_counter = ->(text) { encoder.encode(text).length }
+
+# Character splitter with token counting
+char_splitter = Baran::CharacterTextSplitter.new(
+  chunk_size: 500,        # 500 tokens
+  chunk_overlap: 50,      # 50 tokens overlap
+  separator: ' ',
+  token_count_fn: token_counter
+)
+
+# Sentence splitter with token counting
+sentence_splitter = Baran::SentenceTextSplitter.new(
+  chunk_size: 200,        # 200 tokens
+  chunk_overlap: 20,      # 20 tokens overlap
+  token_count_fn: token_counter
+)
+
+# Markdown splitter with token counting
+markdown_splitter = Baran::MarkdownSplitter.new(
+  chunk_size: 1000,       # 1000 tokens
+  chunk_overlap: 100,     # 100 tokens overlap
+  token_count_fn: token_counter
+)
+
+# Recursive splitter with token counting (most flexible)
+recursive_splitter = Baran::RecursiveCharacterTextSplitter.new(
+  chunk_size: 1500,       # 1500 tokens
+  chunk_overlap: 150,     # 150 tokens overlap
+  token_count_fn: token_counter
+)
+```
+
+### Practical Example: Processing Documents for GPT-4
+
+```ruby
+require 'tiktoken_ruby'
+
+class DocumentProcessor
+  def initialize
+    @encoder = Tiktoken.encoding_for_model("gpt-4")
+    @token_counter = ->(text) { @encoder.encode(text).length }
+    
+    @splitter = Baran::RecursiveCharacterTextSplitter.new(
+      chunk_size: 2000,      # 2000 tokens per chunk
+      chunk_overlap: 200,    # 200 tokens overlap
+      token_count_fn: @token_counter
+    )
+  end
+
+  def process_document(text, metadata = {})
+    chunks = @splitter.chunks(text, metadata: metadata)
+    
+    chunks.each_with_index do |chunk, index|
+      token_count = @token_counter.call(chunk[:text])
+      puts "Chunk #{index + 1}: #{token_count} tokens"
+      puts "Text: #{chunk[:text][0..100]}..."
+      puts "---"
+    end
+    
+    chunks
+  end
+end
+
+# Usage
+processor = DocumentProcessor.new
+long_text = "Your very long document text here..."
+chunks = processor.process_document(long_text, { source: "document.pdf" })
+```
+
+### Backward Compatibility
+
+The token counting feature is fully backward compatible. If no `token_count_fn` is provided, the splitters default to character counting (the original behavior):
+
+```ruby
+# This works exactly as before (character counting)
+splitter = Baran::RecursiveCharacterTextSplitter.new(chunk_size: 1024, chunk_overlap: 64)
+
+# This also works (explicit character counting)
+char_counter = ->(text) { text.length }
+splitter = Baran::RecursiveCharacterTextSplitter.new(
+  chunk_size: 1024,
+  chunk_overlap: 64,
+  token_count_fn: char_counter
+)
+```
+
+### Advanced Token Counting Examples
+
+```ruby
+# Custom token counting for specific use cases
+def custom_token_count(text)
+  # Count words, but weight longer words more
+  words = text.split(' ')
+  words.sum { |word| word.length > 5 ? 2 : 1 }
+end
+
+custom_counter = ->(text) { custom_token_count(text) }
+splitter = Baran::RecursiveCharacterTextSplitter.new(
+  chunk_size: 50,
+  chunk_overlap: 5,
+  token_count_fn: custom_counter
+)
+
+# Token counting with preprocessing
+def preprocessed_token_count(text)
+  # Remove extra whitespace and count meaningful tokens
+  cleaned = text.gsub(/\s+/, ' ').strip
+  cleaned.split(' ').length
+end
+
+preprocessed_counter = ->(text) { preprocessed_token_count(text) }
+splitter = Baran::RecursiveCharacterTextSplitter.new(
+  chunk_size: 100,
+  chunk_overlap: 10,
+  token_count_fn: preprocessed_counter
+)
+```
+
 ## API Reference
 
 ### TextSplitter (Base Class)
@@ -225,10 +452,11 @@ Base class for all text splitters.
 
 #### Methods
 
-##### `initialize(chunk_size: 1024, chunk_overlap: 64)`
+##### `initialize(chunk_size: 1024, chunk_overlap: 64, token_count_fn: nil)`
 
-- `chunk_size` (Integer): Maximum characters per chunk
-- `chunk_overlap` (Integer): Characters to overlap between chunks
+- `chunk_size` (Integer): Maximum characters/tokens per chunk
+- `chunk_overlap` (Integer): Characters/tokens to overlap between chunks
+- `token_count_fn` (Proc, optional): Custom function for counting tokens. If not provided, defaults to character counting
 
 ##### `chunks(text, metadata: nil)`
 

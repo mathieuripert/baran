@@ -2,8 +2,8 @@
 
 module Baran
   class SentenceTextSplitter < TextSplitter
-    def initialize(chunk_size: 1024, chunk_overlap: 64)
-      super(chunk_size: chunk_size, chunk_overlap: chunk_overlap)
+    def initialize(chunk_size: 1024, chunk_overlap: 64, token_count_fn: nil)
+      super(chunk_size: chunk_size, chunk_overlap: chunk_overlap, token_count_fn: token_count_fn)
     end
 
     def splitted(text)

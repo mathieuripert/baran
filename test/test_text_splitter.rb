@@ -1,9 +1,9 @@
-require 'minitest/autorun'
+require 'minitest/unit'
 require 'baran'
 
 MiniTest::Unit.autorun
 
-class TestTextSplitter < Minitest::Test
+class TestTextSplitter < MiniTest::Unit::TestCase
   def setup
     @splitter = Baran::TextSplitter.new
     @test_splitter = Class.new(Baran::TextSplitter) do
@@ -79,6 +79,89 @@ class TestTextSplitter < Minitest::Test
       { splits: ['txt', 'ii', 'tx', 'oo'], expected: ['txt ii', 'ii tx', 'tx oo'] },
     ].each do |data|
       assert_equal data[:expected], @test_splitter.merged(data[:splits], ' ')
+    end
+  end
+
+  def test_token_count_default
+    # Test default character counting
+    assert_equal 5, @splitter.token_count("hello")
+    assert_equal 0, @splitter.token_count("")
+  end
+
+  def test_token_count_custom
+    # Test custom word counting function
+    word_counter = ->(text) { text.split(' ').length }
+    splitter = Baran::TextSplitter.new(token_count_fn: word_counter)
+    
+    assert_equal 1, splitter.token_count("hello")
+    assert_equal 3, splitter.token_count("hello world test")
+    assert_equal 0, splitter.token_count("")
+  end
+
+  def test_recursive_splitter_with_custom_token_count
+    # Test RecursiveCharacterTextSplitter with word counting
+    word_counter = ->(text) { text.split(' ').length }
+    splitter = Baran::RecursiveCharacterTextSplitter.new(
+      chunk_size: 3, 
+      chunk_overlap: 1, 
+      token_count_fn: word_counter
+    )
+    
+    text = "This is a test sentence with multiple words"
+    chunks = splitter.chunks(text)
+    
+    # Verify that chunks are created based on word count, not character count
+    chunks.each do |chunk|
+      word_count = chunk[:text].split(' ').length
+      assert word_count <= 3, "Chunk has #{word_count} words, should be <= 3"
+    end
+  end
+
+  def test_character_splitter_with_custom_token_count
+    # Test CharacterTextSplitter with word counting
+    word_counter = ->(text) { text.split(' ').length }
+    splitter = Baran::CharacterTextSplitter.new(
+      chunk_size: 2, 
+      chunk_overlap: 1, 
+      separator: ' ',  # Use space as separator to split by words
+      token_count_fn: word_counter
+    )
+    
+    text = "First sentence. Second sentence. Third sentence."
+    chunks = splitter.chunks(text)
+    
+    # Verify that chunks are created based on word count
+    chunks.each do |chunk|
+      word_count = chunk[:text].split(' ').length
+      assert word_count <= 2, "Chunk has #{word_count} words, should be <= 2"
+    end
+  end
+
+  def test_markdown_splitter_with_custom_token_count
+    # Test MarkdownSplitter with word counting
+    word_counter = ->(text) { text.split(' ').length }
+    splitter = Baran::MarkdownSplitter.new(
+      chunk_size: 4, 
+      chunk_overlap: 1, 
+      token_count_fn: word_counter
+    )
+    
+    text = <<~TEXT
+      # Heading One
+      
+      This is the first paragraph with multiple words.
+      
+      ## Heading Two
+      
+      This is the second paragraph with more words.
+    TEXT
+    
+    chunks = splitter.chunks(text)
+    
+    # Verify that chunks are created based on word count
+    chunks.each do |chunk|
+      word_count = chunk[:text].split(' ').length
+      assert word_count <= 4, "Chunk has #{word_count} words, should be <= 4"
     end
   end
 end

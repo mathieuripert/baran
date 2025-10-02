@@ -4,8 +4,8 @@ module Baran
   class CharacterTextSplitter < TextSplitter
     attr_accessor :separator
 
-    def initialize(chunk_size: 1024, chunk_overlap: 64, separator: nil)
-      super(chunk_size: chunk_size, chunk_overlap: chunk_overlap)
+    def initialize(chunk_size: 1024, chunk_overlap: 64, separator: nil, token_count_fn: nil)
+      super(chunk_size: chunk_size, chunk_overlap: chunk_overlap, token_count_fn: token_count_fn)
       @separator = separator || "\n\n"
     end
 
