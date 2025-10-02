@@ -10,7 +10,32 @@ module Baran
     end
 
     def splitted(text)
-      splits = separator.empty? ? text.chars : text.split(separator)
+      if separator.is_a?(Regexp)
+        # For regexp separators, split the text and reconstruct with separators
+        parts = text.split(separator)
+        separators = text.scan(separator)
+        
+        # Reconstruct the chunks with separators
+        splits = []
+        
+        # Handle the first part (before any separator)
+        if parts.length > 0 && !parts[0].empty?
+          splits << parts[0]
+        end
+        
+        # For each separator, combine it with the following part
+        separators.each_with_index do |sep, i|
+          part_index = i + 1
+          if part_index < parts.length
+            chunk = sep + parts[part_index]
+            splits << chunk unless chunk.empty?
+          end
+        end
+      elsif separator.empty?
+        splits = text.chars
+      else
+        splits = text.split(separator)
+      end
       merged(splits, @separator)
     end
   end

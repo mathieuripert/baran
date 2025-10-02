@@ -29,7 +29,8 @@ module Baran
     end
 
     def joined(items, separator)
-      text = items.join(separator).strip
+      separator_str = separator.is_a?(Regexp) ? "\n" : separator
+      text = items.join(separator_str).strip
       text.empty? ? nil : text
     end
 
