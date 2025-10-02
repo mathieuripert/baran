@@ -14,6 +14,14 @@ module Baran
       good_splits = []
       separator = ''
 
+      # First, check if the text contains markdown tables
+      tables = detect_markdown_tables(text)
+      
+      # If text contains tables and is larger than chunk_size, handle specially
+      if tables.any? && token_count(text) >= chunk_size
+        return handle_text_with_tables(text, tables)
+      end
+
       separators.each do |s|
         if s.is_a?(Regexp)
           if text.match?(s)
@@ -46,6 +54,38 @@ module Baran
         results += merged(good_splits, separator)
       end
 
+      results
+    end
+
+    private
+
+    def handle_text_with_tables(text, tables)
+      results = []
+      current_pos = 0
+      
+      tables.each do |table|
+        # Add text before the table
+        if table[:start] > current_pos
+          before_table = text[current_pos...table[:start]].strip
+          if !before_table.empty?
+            # Recursively split the text before the table
+            results += splitted(before_table)
+          end
+        end
+        
+        # Add the complete table as a single chunk
+        results << table[:text]
+        current_pos = table[:end]
+      end
+      
+      # Add any remaining text after the last table
+      if current_pos < text.length
+        after_tables = text[current_pos..-1].strip
+        if !after_tables.empty?
+          results += splitted(after_tables)
+        end
+      end
+      
       results
     end
   end

@@ -43,6 +43,58 @@ module Baran
       end
     end
 
+    def detect_markdown_tables(text)
+      # Find all markdown tables in the text
+      tables = []
+      lines = text.split("\n")
+      
+      i = 0
+      while i < lines.length
+        line = lines[i]
+        
+        # Check if this line looks like a table header (contains |)
+        if line.strip.match?(/^\|.*\|$/) || line.strip.match?(/^[^|]*\|.*\|[^|]*$/)
+          # Look for the separator line (next line with dashes and pipes)
+          if i + 1 < lines.length && lines[i + 1].strip.match?(/^[\|\-\s:]+$/)
+            # Found a table! Collect all consecutive table rows
+            table_start = i
+            table_lines = [lines[i], lines[i + 1]] # header and separator
+            
+            j = i + 2
+            while j < lines.length
+              next_line = lines[j]
+              if next_line.strip.match?(/^\|.*\|$/) || next_line.strip.match?(/^[^|]*\|.*\|[^|]*$/)
+                table_lines << next_line
+                j += 1
+              else
+                break
+              end
+            end
+            
+            # Calculate positions in original text
+            text_before_table = lines[0...table_start].join("\n")
+            start_pos = text_before_table.length + (table_start > 0 ? 1 : 0) # +1 for newline
+            table_text = table_lines.join("\n")
+            end_pos = start_pos + table_text.length
+            
+            tables << {
+              start: start_pos,
+              end: end_pos,
+              text: table_text
+            }
+            
+            i = j
+          else
+            i += 1
+          end
+        else
+          i += 1
+        end
+      end
+      
+      tables
+    end
+
     def split_with_separator_preservation(text, separator)
       if separator.is_a?(Regexp)
         # For regexp separators, preserve the separator in the chunks
@@ -84,21 +136,45 @@ module Baran
 
       splits.each do |split|
         split_token_count = token_count(split)
+        
+        # Check if this split contains a markdown table
+        tables = detect_markdown_tables(split)
+        contains_table = tables.any?
+        
         if total + split_token_count >= chunk_size && current_splits.length.positive?
-          results << joined(current_splits, separator)
+          # If the current split contains a table, don't split it
+          if contains_table
+            # Finish the current chunk and start a new one with the table
+            results << joined(current_splits, separator) unless current_splits.empty?
+            results << split
+            current_splits = []
+            total = 0
+            next
+          else
+            results << joined(current_splits, separator)
 
-          while total > chunk_overlap || (total + split_token_count >= chunk_size && total.positive?)
-            total -= token_count(current_splits.first)
-            current_splits.shift
+            while total > chunk_overlap || (total + split_token_count >= chunk_size && total.positive?)
+              total -= token_count(current_splits.first)
+              current_splits.shift
+            end
           end
         end
 
-        current_splits << split
-        total += split_token_count
-        Logger.new(STDOUT).warn("Created a chunk of size #{total}, which is longer than the specified #{@chunk_size}") if total > @chunk_size
+        # If this split contains a table and would make the chunk too big, 
+        # finish current chunk and put table in its own chunk
+        if contains_table && total > 0 && total + split_token_count > chunk_size
+          results << joined(current_splits, separator) unless current_splits.empty?
+          results << split
+          current_splits = []
+          total = 0
+        else
+          current_splits << split
+          total += split_token_count
+          Logger.new(STDOUT).warn("Created a chunk of size #{total}, which is longer than the specified #{@chunk_size}") if total > @chunk_size
+        end
       end
 
-      results << joined(current_splits, separator)
+      results << joined(current_splits, separator) unless current_splits.empty?
 
       results
     end
