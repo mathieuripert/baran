@@ -1,0 +1,47 @@
+{
+  "metadata": {
+    "input_file": "test/data/simple_test.md",
+    "document_length": 998,
+    "chunk_count": 5,
+    "chunk_size": 400,
+    "chunk_overlap": 50,
+    "generated_at": "2025-10-02 09:24:56 +0200"
+  },
+  "chunks": [
+    {
+      "index": 0,
+      "text": "# Simple Test Document\n\nThis is a simple test document to demonstrate the generic integration testing system.\nThis is a simple test document to demonstrate the generic integration testing system.\nThis is a simple test document to demonstrate the generic integration testing system.",
+      "cursor": 0,
+      "length": 281,
+      "contains_table": false
+    },
+    {
+      "index": 1,
+      "text": "This is a simple test document to demonstrate the generic integration testing system.\nThis is a simple test document to demonstrate the generic integration testing system.\nThis is a simple test document to demonstrate the generic integration testing system.",
+      "cursor": 281,
+      "length": 257,
+      "contains_table": false
+    },
+    {
+      "index": 2,
+      "text": "## Section 1\n\nHere's some content for section 1. This section contains enough text to potentially create multiple chunks depending on the chunk size settings.\n\n## Section 2\n\nThis is section 2 with different content. It includes a simple table:",
+      "cursor": 538,
+      "length": 243,
+      "contains_table": false
+    },
+    {
+      "index": 3,
+      "text": "| Name | Value |\n|------|-------|\n| Test | 123   |\n| Demo | 456   |",
+      "cursor": 781,
+      "length": 67,
+      "contains_table": true
+    },
+    {
+      "index": 4,
+      "text": "## Section 3\n\nFinal section with some concluding remarks. This document is designed to test the generic markdown splitter integration system.",
+      "cursor": 848,
+      "length": 141,
+      "contains_table": false
+    }
+  ]
+}
