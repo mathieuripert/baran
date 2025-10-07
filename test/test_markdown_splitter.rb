@@ -31,8 +31,8 @@ MARKDOWN
     # Should split at each header and preserve the header markers
     assert_equal(4, chunks.length)
     assert_equal("# Main Heading\nContent for main heading.", chunks[0][:text])
-    assert_equal("Section 2\nContent for section 2.", chunks[1][:text])  # Fixed: no ## marker
-    assert_equal("Subsection\nContent for subsection.\n---", chunks[2][:text])  # Fixed: includes the separator
+    assert_equal("## Section 2\nContent for section 2.", chunks[1][:text])  # Header marker preserved
+    assert_equal("### Subsection\nContent for subsection.\n---", chunks[2][:text])  # Header marker preserved
     assert_equal("---\nFinal content.", chunks[3][:text])
   end
 

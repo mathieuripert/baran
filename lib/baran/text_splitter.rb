@@ -137,41 +137,22 @@ module Baran
       splits.each do |split|
         split_token_count = token_count(split)
         
-        # Check if this split contains a markdown table
+        # Check if this split contains a markdown table (for metadata/logging purposes)
         tables = detect_markdown_tables(split)
         contains_table = tables.any?
         
         if total + split_token_count >= chunk_size && current_splits.length.positive?
-          # If the current split contains a table, don't split it
-          if contains_table
-            # Finish the current chunk and start a new one with the table
-            results << joined(current_splits, separator) unless current_splits.empty?
-            results << split
-            current_splits = []
-            total = 0
-            next
-          else
-            results << joined(current_splits, separator)
+          results << joined(current_splits, separator)
 
-            while total > chunk_overlap || (total + split_token_count >= chunk_size && total.positive?)
-              total -= token_count(current_splits.first)
-              current_splits.shift
-            end
+          while total > chunk_overlap || (total + split_token_count >= chunk_size && total.positive?)
+            total -= token_count(current_splits.first)
+            current_splits.shift
           end
         end
 
-        # If this split contains a table and would make the chunk too big, 
-        # finish current chunk and put table in its own chunk
-        if contains_table && total > 0 && total + split_token_count > chunk_size
-          results << joined(current_splits, separator) unless current_splits.empty?
-          results << split
-          current_splits = []
-          total = 0
-        else
-          current_splits << split
-          total += split_token_count
-          Logger.new(STDOUT).warn("Created a chunk of size #{total}, which is longer than the specified #{@chunk_size}") if total > @chunk_size
-        end
+        current_splits << split
+        total += split_token_count
+        Logger.new(STDOUT).warn("Created a chunk of size #{total}, which is longer than the specified #{@chunk_size}") if total > @chunk_size
       end
 
       results << joined(current_splits, separator) unless current_splits.empty?
