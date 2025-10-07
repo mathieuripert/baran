@@ -2,143 +2,66 @@
   "metadata": {
     "input_file": "test/data/input_text.md",
     "document_length": 4806,
-    "chunk_count": 19,
-    "chunk_size": 400,
-    "chunk_overlap": 50,
-    "generated_at": "2025-10-02 09:24:56 +0200"
+    "chunk_count": 8,
+    "chunk_size": 800,
+    "chunk_overlap": 100,
+    "generated_at": "2025-10-07 10:33:21 +0200"
   },
   "chunks": [
     {
       "index": 0,
-      "text": "# TechCorp Industries Annual Report 2024",
+      "text": "# TechCorp Industries Annual Report 2024\n\n## Executive Summary\n\nTechCorp Industries has demonstrated exceptional growth and innovation throughout 2024. Our commitment to technological advancement and sustainable business practices has positioned us as a market leader in the software solutions sector.\n\n### Key Highlights\n\n- Revenue increased by 35% year-over-year\n- Expanded operations to 15 new international markets\n- Launched three groundbreaking AI-powered products\n- Achieved carbon neutrality across all facilities",
       "cursor": 0,
-      "length": 40,
+      "length": 521,
       "contains_table": false
     },
     {
       "index": 1,
-      "text": "## Executive Summary\n\nTechCorp Industries has demonstrated exceptional growth and innovation throughout 2024. Our commitment to technological advancement and sustainable business practices has positioned us as a market leader in the software solutions sector.",
-      "cursor": 40,
-      "length": 259,
+      "text": "Page 1: Company Overview\n\n### Our Mission\n\nTo revolutionize the technology landscape through innovative software solutions that empower businesses worldwide to achieve unprecedented efficiency and growth.\n\n### Vision Statement\n\nWe envision a future where intelligent technology seamlessly integrates with human creativity to solve the world's most complex challenges.\n\n## Page 2: Financial Performance\n\n### Revenue Growth\n\nOur financial performance in 2024 exceeded all expectations. Total revenue reached $2.8 billion, representing a 35% increase from the previous year.\n\n### Profit Margins\n\nOperating margins improved to 28%, demonstrating our operational efficiency and strategic cost management initiatives.",
+      "cursor": 521,
+      "length": 711,
       "contains_table": false
     },
     {
       "index": 2,
-      "text": "### Key Highlights\n\n- Revenue increased by 35% year-over-year\n- Expanded operations to 15 new international markets\n- Launched three groundbreaking AI-powered products\n- Achieved carbon neutrality across all facilities",
-      "cursor": 299,
-      "length": 218,
+      "text": "Page 3: Product Innovation\n\n### AI Solutions Division\n\nOur artificial intelligence division launched three revolutionary products:\n- SmartAnalytics Pro: Advanced data processing platform\n- AutoCode Assistant: AI-powered development tool\n- PredictiveOps: Operational forecasting system\n\n### Research and Development\n\nWe invested $420 million in R&D activities, focusing on machine learning, quantum computing, and sustainable technology solutions.",
+      "cursor": 1232,
+      "length": 446,
       "contains_table": false
     },
     {
       "index": 3,
-      "text": "## Page 1: Company Overview\n\n### Our Mission\n\nTo revolutionize the technology landscape through innovative software solutions that empower businesses worldwide to achieve unprecedented efficiency and growth.\n\n### Vision Statement\n\nWe envision a future where intelligent technology seamlessly integrates with human creativity to solve the world's most complex challenges.",
-      "cursor": 517,
-      "length": 370,
+      "text": "Page 4: Market Expansion\n\n### International Growth\n\nTechCorp successfully entered 15 new international markets, establishing regional offices in:\n- Singapore (Asia-Pacific headquarters)\n- London (European operations center)\n- São Paulo (Latin American hub)\n\n### Strategic Partnerships\n\nWe formed key partnerships with leading technology companies to enhance our global reach and service capabilities.",
+      "cursor": 1678,
+      "length": 400,
       "contains_table": false
     },
     {
       "index": 4,
-      "text": "## Page 2: Financial Performance\n\n### Revenue Growth\n\nOur financial performance in 2024 exceeded all expectations. Total revenue reached $2.8 billion, representing a 35% increase from the previous year.\n\n### Profit Margins\n\nOperating margins improved to 28%, demonstrating our operational efficiency and strategic cost management initiatives.",
-      "cursor": 887,
-      "length": 342,
-      "contains_table": false
+      "text": "Page 5: Financial Summary\n\n### Quarterly Performance Overview\n\n| Quarter | Revenue (M$) | Growth % | Operating Margin % | Net Income (M$) |\n|---------|--------------|----------|-------------------|-----------------|\n| Q1 2024 | 650          | 32%      | 26%               | 169             |\n| Q2 2024 | 720          | 38%      | 28%               | 202             |\n| Q3 2024 | 695          | 33%      | 27%               | 188             |\n| Q4 2024 | 735          | 37%      | 30%               | 221             |\n\n### Annual Totals\n\nTotal annual revenue of $2.8 billion with a net income of $780 million demonstrates our strong financial position and sustainable growth trajectory.",
+      "cursor": 2078,
+      "length": 688,
+      "contains_table": true
     },
     {
       "index": 5,
-      "text": "## Page 3: Product Innovation\n\n### AI Solutions Division\n\nOur artificial intelligence division launched three revolutionary products:\n- SmartAnalytics Pro: Advanced data processing platform\n- AutoCode Assistant: AI-powered development tool\n- PredictiveOps: Operational forecasting system",
-      "cursor": 1229,
-      "length": 287,
+      "text": "Page 6: Sustainability Initiatives\n\n### Environmental Impact\n\nTechCorp achieved carbon neutrality across all facilities through:\n- 100% renewable energy adoption\n- Advanced waste reduction programs\n- Sustainable supply chain optimization\n\n### Social Responsibility\n\nWe invested $50 million in community development programs and educational initiatives worldwide.\n\n## Page 7: Human Resources\n\n### Workforce Growth\n\nOur global team expanded to 12,500 employees, representing a 25% increase from 2023.\n\n### Diversity and Inclusion\n\nWe achieved 45% gender diversity in leadership positions and implemented comprehensive inclusion programs across all departments.",
+      "cursor": 2766,
+      "length": 658,
       "contains_table": false
     },
     {
       "index": 6,
-      "text": "### Research and Development\n\nWe invested $420 million in R&D activities, focusing on machine learning, quantum computing, and sustainable technology solutions.",
-      "cursor": 1516,
-      "length": 160,
+      "text": "Page 8: Technology Infrastructure\n\n### Cloud Operations\n\nOur cloud infrastructure now serves over 50,000 enterprise clients across 45 countries with 99.9% uptime reliability.\n\n### Security Enhancements\n\nWe implemented advanced cybersecurity measures, including zero-trust architecture and AI-powered threat detection systems.\n\n## Page 9: Future Outlook\n\n### 2025 Strategic Goals\n\n- Expand AI product portfolio with five new solutions\n- Enter 10 additional international markets\n- Achieve 40% revenue growth\n- Launch quantum computing research initiative\n\n### Long-term Vision\n\nBy 2030, we aim to become the world's leading provider of intelligent business solutions, serving over 100,000 clients globally.",
+      "cursor": 3424,
+      "length": 705,
       "contains_table": false
     },
     {
       "index": 7,
-      "text": "## Page 4: Market Expansion\n\n### International Growth\n\nTechCorp successfully entered 15 new international markets, establishing regional offices in:\n- Singapore (Asia-Pacific headquarters)\n- London (European operations center)\n- São Paulo (Latin American hub)",
-      "cursor": 1676,
-      "length": 259,
-      "contains_table": false
-    },
-    {
-      "index": 8,
-      "text": "### Strategic Partnerships\n\nWe formed key partnerships with leading technology companies to enhance our global reach and service capabilities.",
-      "cursor": 1935,
-      "length": 142,
-      "contains_table": false
-    },
-    {
-      "index": 9,
-      "text": "## Page 5: Financial Summary\n\n### Quarterly Performance Overview",
-      "cursor": 2077,
-      "length": 64,
-      "contains_table": false
-    },
-    {
-      "index": 10,
-      "text": "| Quarter | Revenue (M$) | Growth % | Operating Margin % | Net Income (M$) |\n|---------|--------------|----------|-------------------|-----------------|\n| Q1 2024 | 650          | 32%      | 26%               | 169             |\n| Q2 2024 | 720          | 38%      | 28%               | 202             |\n| Q3 2024 | 695          | 33%      | 27%               | 188             |\n| Q4 2024 | 735          | 37%      | 30%               | 221             |",
-      "cursor": 2141,
-      "length": 456,
-      "contains_table": true
-    },
-    {
-      "index": 11,
-      "text": "### Annual Totals\n\nTotal annual revenue of $2.8 billion with a net income of $780 million demonstrates our strong financial position and sustainable growth trajectory.",
-      "cursor": 2597,
-      "length": 167,
-      "contains_table": false
-    },
-    {
-      "index": 12,
-      "text": "## Page 6: Sustainability Initiatives\n\n### Environmental Impact\n\nTechCorp achieved carbon neutrality across all facilities through:\n- 100% renewable energy adoption\n- Advanced waste reduction programs\n- Sustainable supply chain optimization\n\n### Social Responsibility\n\nWe invested $50 million in community development programs and educational initiatives worldwide.",
-      "cursor": 2764,
-      "length": 365,
-      "contains_table": false
-    },
-    {
-      "index": 13,
-      "text": "## Page 7: Human Resources\n\n### Workforce Growth\n\nOur global team expanded to 12,500 employees, representing a 25% increase from 2023.\n\n### Diversity and Inclusion\n\nWe achieved 45% gender diversity in leadership positions and implemented comprehensive inclusion programs across all departments.",
-      "cursor": 3129,
-      "length": 294,
-      "contains_table": false
-    },
-    {
-      "index": 14,
-      "text": "## Page 8: Technology Infrastructure\n\n### Cloud Operations\n\nOur cloud infrastructure now serves over 50,000 enterprise clients across 45 countries with 99.9% uptime reliability.\n\n### Security Enhancements\n\nWe implemented advanced cybersecurity measures, including zero-trust architecture and AI-powered threat detection systems.",
-      "cursor": 3423,
-      "length": 328,
-      "contains_table": false
-    },
-    {
-      "index": 15,
-      "text": "## Page 9: Future Outlook\n\n### 2025 Strategic Goals\n\n- Expand AI product portfolio with five new solutions\n- Enter 10 additional international markets\n- Achieve 40% revenue growth\n- Launch quantum computing research initiative\n\n### Long-term Vision\n\nBy 2030, we aim to become the world's leading provider of intelligent business solutions, serving over 100,000 clients globally.",
-      "cursor": 3751,
-      "length": 378,
-      "contains_table": false
-    },
-    {
-      "index": 16,
-      "text": "## Page 10: Conclusion\n\n### Board Statement\n\nThe Board of Directors expresses confidence in TechCorp's strategic direction and management team's ability to deliver continued growth and innovation.",
+      "text": "Page 10: Conclusion\n\n### Board Statement\n\nThe Board of Directors expresses confidence in TechCorp's strategic direction and management team's ability to deliver continued growth and innovation.\n\n### Shareholder Value\n\nWe remain committed to maximizing shareholder value through sustainable growth, operational excellence, and strategic investments in emerging technologies.\n\n---\n\n*This annual report contains forward-looking statements based on current expectations and assumptions. Actual results may differ materially from those projected.*\n\n**TechCorp Industries Inc.**  \n*Headquarters: San Francisco, CA*  \n*Founded: 2010*  \n*NYSE: TECH*",
       "cursor": 4129,
-      "length": 196,
-      "contains_table": false
-    },
-    {
-      "index": 17,
-      "text": "### Shareholder Value\n\nWe remain committed to maximizing shareholder value through sustainable growth, operational excellence, and strategic investments in emerging technologies.",
-      "cursor": 4325,
-      "length": 178,
-      "contains_table": false
-    },
-    {
-      "index": 18,
-      "text": "---\n*This annual report contains forward-looking statements based on current expectations and assumptions. Actual results may differ materially from those projected.*\n\n**TechCorp Industries Inc.**  \n*Headquarters: San Francisco, CA*  \n*Founded: 2010*  \n*NYSE: TECH*",
-      "cursor": 4503,
-      "length": 265,
+      "length": 641,
       "contains_table": false
     }
   ]

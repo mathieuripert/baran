@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "input_file": "test/data/merging_test.md",
+    "document_length": 429,
+    "chunk_count": 3,
+    "chunk_size": 150,
+    "chunk_overlap": 30,
+    "generated_at": "2025-10-07 10:33:21 +0200"
+  },
+  "chunks": [
+    {
+      "index": 0,
+      "text": "# Page 1\n\nThis line contains 33 characters\nThis line contains 33 characters\nThis line contains 33 characters\nThis line contains 33 characters",
+      "cursor": 0,
+      "length": 141,
+      "contains_table": false
+    },
+    {
+      "index": 1,
+      "text": "Page 2\n\nThis line contains 33 characters\nThis line contains 33 characters\nThis line contains 33 characters\nThis line contains 33 characters",
+      "cursor": 141,
+      "length": 139,
+      "contains_table": false
+    },
+    {
+      "index": 2,
+      "text": "Page 3\n\nThis line contains 33 characters\nThis line contains 33 characters\nThis line contains 33 characters\nThis line contains 33 characters",
+      "cursor": 280,
+      "length": 139,
+      "contains_table": false
+    }
+  ]
+}
