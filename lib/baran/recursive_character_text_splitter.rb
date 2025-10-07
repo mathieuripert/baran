@@ -39,7 +39,7 @@ module Baran
 
       # If no separator was found and character-level splitting is not in separators,
       # preserve semantic integrity by returning text as-is
-      if separator == '' && !separators.include?('')
+      if separator == '' && !separators.any? { |s| s.is_a?(String) && s == '' }
         return [text]
       end
 
