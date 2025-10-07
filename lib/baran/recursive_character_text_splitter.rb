@@ -14,13 +14,9 @@ module Baran
       good_splits = []
       separator = ''
 
-      # First, check if the text contains markdown tables
-      tables = detect_markdown_tables(text)
-      
-      # If text contains tables and is larger than chunk_size, handle specially
-      if tables.any? && token_count(text) >= chunk_size
-        return handle_text_with_tables(text, tables)
-      end
+      # Note: We used to have special table handling here, but now we let tables
+      # flow through the normal splitting and merging process to allow them to
+      # merge with other content when they fit within chunk_size
 
       # Find the first separator that matches
       separators.each do |s|

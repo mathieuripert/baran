@@ -74,49 +74,97 @@ class TestRecursiveCharacterTextSplitter < MiniTest::Unit::TestCase
 
 
   def test_markdown_table_merging
-    # Simple test case: small table that should merge with surrounding text
+    # Simple test document with multiple sections and tables
     text = <<~TEXT
-# Title 
-Before table text.
+== Section 1 ==
 
-## Table title
+Introduction to our test document.
 
-| Name | Age |
-|------|-----|
-| John | 25  |
+== Section 2 ==
 
-After table text.
+# Main Content
+
+Here is some content before our first table.
+
+| Item | Quantity | Price |
+|------|----------|-------|
+| Apple | 10 | $5.00 |
+| Banana | 15 | $3.00 |
+| Orange | 8 | $4.00 |
+
+This text comes after the first table.
+
+== Section 3 ==
+
+## Product Categories
+
+More descriptive text about products.
+
+| Category | Count |
+|----------|-------|
+| Fruits | 25 |
+| Vegetables | 18 |
+
+Additional content after the second table.
+
+== Section 4 ==
+
+### Summary
+
+| Metric | Value |
+|--------|-------|
+| Total Items | 43 |
+| Revenue | $95.00 |
+
+Final summary text here.
+
+== Section 5 ==
+
+Conclusion of the document.
 TEXT
 
-    # Use a large chunk size so everything should fit in one chunk
+    # Use standard separators including page breaks
     splitter = Baran::RecursiveCharacterTextSplitter.new(
-      chunk_size: 200,
+      chunk_size: 1024,
       chunk_overlap: 0,
-      separators: [
-        Regexp.new('== (?:Page )?\d+ =='),
-        Regexp.new('#'),
-        Regexp.new('##'),
-        Regexp.new('###'),
-      ]
+      separators: [/== (?:Section )?\d+ ==/, /\n# /, /\n## /, /\n### /, "\n\n", "\n", " ", ""]
     )
     
     chunks = splitter.chunks(text)
     
     puts "Text length: #{text.length} chars"
-    puts "Generated #{chunks.length} chunks with chunk_size=200:"
+    puts "Generated #{chunks.length} chunks with chunk_size=1024:"
     chunks.each_with_index do |chunk, i|
       puts "\nChunk #{i+1} (#{chunk[:text].length} chars):"
-      puts "Text: #{chunk[:text].inspect}"
+      puts "Contains table: #{chunk[:text].include?('|')}"
+      puts "First 80 chars: #{chunk[:text][0..80].inspect}..."
     end
     
-    # Test expectation: With chunk_size=200, everything should fit in 1 chunk
-    # Tables should NOT be isolated when they can merge with other content
-    assert_equal 1, chunks.length, "Expected 1 chunk since total text (#{text.length} chars) fits in chunk_size (200)"
+    # Check if any tables are isolated (table-only chunks)
+    table_chunks = chunks.select { |c| c[:text].include?('|') }
+    isolated_tables = table_chunks.select do |chunk|
+      text = chunk[:text].strip
+      # Check if chunk is mostly just table content (no substantial other text)
+      lines = text.split("\n")
+      table_lines = lines.count { |line| line.include?('|') }
+      non_table_lines = lines.count { |line| !line.include?('|') && line.strip.length > 5 }
+      table_lines > 0 && non_table_lines < 2
+    end
     
-    # Verify the single chunk contains both table and other content
-    chunk_text = chunks[0][:text]
-    assert chunk_text.include?('|'), "Chunk should contain table"
-    assert chunk_text.include?('Before table'), "Chunk should contain text before table"
-    assert chunk_text.include?('After table'), "Chunk should contain text after table"
+    puts "\nTable analysis:"
+    puts "Total chunks with tables: #{table_chunks.length}"
+    puts "Isolated table chunks: #{isolated_tables.length}"
+    
+    # Basic assertions
+    assert chunks.length > 0, "Should generate at least one chunk"
+    
+    # The main test: tables should NOT be isolated when they can merge with other content
+    # With chunk_size=1024, tables should be able to merge with surrounding text
+    assert_equal 0, isolated_tables.length, "Tables should not be isolated when they can merge with other content"
+    
+    # Verify that tables are preserved
+    all_text = chunks.map { |c| c[:text] }.join("\n")
+    assert all_text.include?("| Item | Quantity | Price |"), "Should preserve table headers"
+    assert all_text.include?("| Apple | 10 | $5.00 |"), "Should preserve table content"
   end
 end
