@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'minitest/unit'
 require 'baran'
 
@@ -26,7 +28,8 @@ class TestCharacterTextSplitter < MiniTest::Unit::TestCase
     TEXT
     expected_chunk_1 = "== Page 1 ==\nHello, world!"
     @splitter = Baran::CharacterTextSplitter.new(
-      chunk_size: 10, chunk_overlap: 0, separator: separator)
+      chunk_size: 10, chunk_overlap: 0, separator: separator
+    )
     chunks = @splitter.chunks(text)
     assert_equal(chunks.length, 3)
     assert_equal(chunks[0][:text], expected_chunk_1)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'logger'
 
 module Baran
@@ -8,11 +10,11 @@ module Baran
       @chunk_size = chunk_size
       @chunk_overlap = chunk_overlap
       @token_count_fn = token_count_fn
-      raise "Cannot have chunk_overlap >= chunk_size" if @chunk_overlap >= @chunk_size
+      raise 'Cannot have chunk_overlap >= chunk_size' if @chunk_overlap >= @chunk_size
     end
 
     def splitted(text)
-      raise NotImplementedError, "splitted method should be implemented in a subclass"
+      raise NotImplementedError, 'splitted method should be implemented in a subclass'
     end
 
     def chunks(text, metadata: nil)
@@ -47,42 +49,41 @@ module Baran
       # Find all markdown tables in the text
       tables = []
       lines = text.split("\n")
-      
+
       i = 0
       while i < lines.length
         line = lines[i]
-        
+
         # Check if this line looks like a table header (contains |)
         if line.strip.match?(/^\|.*\|$/) || line.strip.match?(/^[^|]*\|.*\|[^|]*$/)
           # Look for the separator line (next line with dashes and pipes)
-          if i + 1 < lines.length && lines[i + 1].strip.match?(/^[\|\-\s:]+$/)
+          if i + 1 < lines.length && lines[i + 1].strip.match?(/^[|\-\s:]+$/)
             # Found a table! Collect all consecutive table rows
             table_start = i
             table_lines = [lines[i], lines[i + 1]] # header and separator
-            
+
             j = i + 2
             while j < lines.length
               next_line = lines[j]
-              if next_line.strip.match?(/^\|.*\|$/) || next_line.strip.match?(/^[^|]*\|.*\|[^|]*$/)
-                table_lines << next_line
-                j += 1
-              else
-                break
-              end
+              break unless next_line.strip.match?(/^\|.*\|$/) || next_line.strip.match?(/^[^|]*\|.*\|[^|]*$/)
+
+              table_lines << next_line
+              j += 1
+
             end
-            
+
             # Calculate positions in original text
             text_before_table = lines[0...table_start].join("\n")
-            start_pos = text_before_table.length + (table_start > 0 ? 1 : 0) # +1 for newline
+            start_pos = text_before_table.length + (table_start.positive? ? 1 : 0) # +1 for newline
             table_text = table_lines.join("\n")
             end_pos = start_pos + table_text.length
-            
+
             tables << {
               start: start_pos,
               end: end_pos,
               text: table_text
             }
-            
+
             i = j
           else
             i += 1
@@ -91,7 +92,7 @@ module Baran
           i += 1
         end
       end
-      
+
       tables
     end
 
@@ -100,32 +101,28 @@ module Baran
         # For regexp separators, preserve the separator in the chunks
         parts = text.split(separator)
         matches = text.scan(separator)
-        
+
         splits = []
-        
+
         # First part (before any separator)
-        if parts.length > 0 && !parts[0].empty?
-          splits << parts[0]
-        end
-        
+        splits << parts[0] if parts.length.positive? && !parts[0].empty?
+
         # Remaining parts with their separators
         matches.each_with_index do |match, i|
           part_index = i + 1
-          if part_index < parts.length
-            # Reconstruct the chunk with the separator (remove leading \n)
-            chunk = match.gsub(/^\n/, '') + parts[part_index]
-            splits << chunk unless chunk.empty?
-          end
+          next unless part_index < parts.length
+
+          # Reconstruct the chunk with the separator (remove leading \n)
+          chunk = match.gsub(/^\n/, '') + parts[part_index]
+          splits << chunk unless chunk.empty?
         end
-        
+
         splits
-      else
+      elsif separator.empty?
         # For string separators, use standard split
-        if separator.empty?
-          text.chars
-        else
-          text.split(separator)
-        end
+        text.chars
+      else
+        text.split(separator)
       end
     end
 
@@ -136,11 +133,11 @@ module Baran
 
       splits.each do |split|
         split_token_count = token_count(split)
-        
+
         # Check if this split contains a markdown table (for metadata/logging purposes)
         tables = detect_markdown_tables(split)
-        contains_table = tables.any?
-        
+        tables.any?
+
         if total + split_token_count >= chunk_size && current_splits.length.positive?
           results << joined(current_splits, separator)
 
@@ -152,7 +149,9 @@ module Baran
 
         current_splits << split
         total += split_token_count
-        Logger.new(STDOUT).warn("Created a chunk of size #{total}, which is longer than the specified #{@chunk_size}") if total > @chunk_size
+        if total > @chunk_size
+          Logger.new($stdout).warn("Created a chunk of size #{total}, which is longer than the specified #{@chunk_size}")
+        end
       end
 
       results << joined(current_splits, separator) unless current_splits.empty?

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'minitest/unit'
 require 'baran'
 
@@ -16,12 +18,12 @@ class TestSentenceTextSplitter < MiniTest::Unit::TestCase
         No, the water was splashed on Bo Peep.
     TEXT
 
-    @expected =[
-      "Hack and jill went up the hill to fetch a pail of water.",
-      "Jack fell down and broke his crown and Jill came tumbling after.",
-      "The pail went flying!",
-      "Was the water spilled?",
-      "No, the water was splashed on Bo Peep."
+    @expected = [
+      'Hack and jill went up the hill to fetch a pail of water.',
+      'Jack fell down and broke his crown and Jill came tumbling after.',
+      'The pail went flying!',
+      'Was the water spilled?',
+      'No, the water was splashed on Bo Peep.'
     ]
   end
 
@@ -37,15 +39,14 @@ class TestSentenceTextSplitter < MiniTest::Unit::TestCase
     assert_equal(sentences, @expected)
   end
 
-
   private
 
   def format_chunks(chunks)
     chunks
-      .map  { |chunk|
-              chunk[:text]
-                .gsub(/\s+/, ' ')
-                .strip
-            }
+      .map do |chunk|
+      chunk[:text]
+        .gsub(/\s+/, ' ')
+        .strip
+    end
   end
 end
