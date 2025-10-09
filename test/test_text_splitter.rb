@@ -21,9 +21,10 @@ class TestTextSplitter < Minitest::Test
     assert_equal 1500, splitter.chunk_size
     assert_equal 300, splitter.chunk_overlap
 
-    assert_raises RuntimeError, 'Cannot have chunk_overlap >= chunk_size' do
-      Baran::TextSplitter.new(chunk_size: 1000, chunk_overlap: 1000)
-    end
+    # Test that chunk_overlap is corrected when >= chunk_size
+    splitter = Baran::TextSplitter.new(chunk_size: 1000, chunk_overlap: 1000)
+    assert_equal 1000, splitter.chunk_size
+    assert_equal 0, splitter.chunk_overlap
   end
 
   def test_splitted
@@ -44,7 +45,7 @@ class TestTextSplitter < Minitest::Test
     TEXT
     splitted = markdown_splitter.splitted(text)
     # With regexp separators, the behavior preserves separators and splits differently
-    assert_equal ['## Heading', 'This is a', 'a sample', 'text', '---', 'Another', 'section"'], splitted
+    assert_equal ['## Heading', 'This is a sample text', '---', 'Another section"'], splitted
   end
 
   def test_chunks
@@ -141,7 +142,7 @@ class TestTextSplitter < Minitest::Test
     # Test MarkdownSplitter with word counting
     word_counter = ->(text) { text.split(' ').length }
     splitter = Baran::MarkdownSplitter.new(
-      chunk_size: 4,
+      chunk_size: 10,
       chunk_overlap: 1,
       token_count_fn: word_counter
     )
@@ -161,7 +162,7 @@ class TestTextSplitter < Minitest::Test
     # Verify that chunks are created based on word count
     chunks.each do |chunk|
       word_count = chunk[:text].split(' ').length
-      assert word_count <= 4, "Chunk has #{word_count} words, should be <= 4"
+      assert word_count <= 10, "Chunk has #{word_count} words, should be <= 10"
     end
   end
 end

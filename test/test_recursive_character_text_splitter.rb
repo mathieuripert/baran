@@ -25,20 +25,35 @@ class TestRecursiveCharacterTextSplitter < Minitest::Test
       Hello world
       # 1.1
       content 1.1
+      ## 1.2
+      chunk 1
+
+      chunk 2
+
       == Page 2 ==
       This is a test
+
       == Page 3 ==
       With multiple paragraphs
+
+      == Page 4 ==
+      | col 1 | col 2 | col 3 |
+      |-------|-------|-------|
+      | 1     | 2     | 3     |
+      | 4     | 5     | 6     |
+      | 7     | 8     | 9     |
     TEXT
     splitter = Baran::RecursiveCharacterTextSplitter.new(
       chunk_size: 1,
       chunk_overlap: 0,
       separators: [
         Regexp.new('== Page \\d+ =='),
-        /\n# / # h1
+        /\n# /, # h1,
+        /\n## /, # h2,
+        "\n\n"
       ]
     )
     chunks = splitter.chunks(text)
-    assert chunks.length == 4
+    assert chunks.length == 7
   end
 end

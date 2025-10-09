@@ -10,7 +10,9 @@ module Baran
       @chunk_size = chunk_size
       @chunk_overlap = chunk_overlap
       @token_count_fn = token_count_fn
-      raise 'Cannot have chunk_overlap >= chunk_size' if @chunk_overlap >= @chunk_size
+      return unless @chunk_overlap >= @chunk_size
+
+      @chunk_overlap = 0
     end
 
     def splitted(text)
@@ -43,57 +45,6 @@ module Baran
       else
         text.length
       end
-    end
-
-    def detect_markdown_tables(text)
-      # Find all markdown tables in the text
-      tables = []
-      lines = text.split("\n")
-
-      i = 0
-      while i < lines.length
-        line = lines[i]
-
-        # Check if this line looks like a table header (contains |)
-        if line.strip.match?(/^\|.*\|$/) || line.strip.match?(/^[^|]*\|.*\|[^|]*$/)
-          # Look for the separator line (next line with dashes and pipes)
-          if i + 1 < lines.length && lines[i + 1].strip.match?(/^[|\-\s:]+$/)
-            # Found a table! Collect all consecutive table rows
-            table_start = i
-            table_lines = [lines[i], lines[i + 1]] # header and separator
-
-            j = i + 2
-            while j < lines.length
-              next_line = lines[j]
-              break unless next_line.strip.match?(/^\|.*\|$/) || next_line.strip.match?(/^[^|]*\|.*\|[^|]*$/)
-
-              table_lines << next_line
-              j += 1
-
-            end
-
-            # Calculate positions in original text
-            text_before_table = lines[0...table_start].join("\n")
-            start_pos = text_before_table.length + (table_start.positive? ? 1 : 0) # +1 for newline
-            table_text = table_lines.join("\n")
-            end_pos = start_pos + table_text.length
-
-            tables << {
-              start: start_pos,
-              end: end_pos,
-              text: table_text
-            }
-
-            i = j
-          else
-            i += 1
-          end
-        else
-          i += 1
-        end
-      end
-
-      tables
     end
 
     def split_with_separator_preservation(text, separator)
@@ -133,10 +84,6 @@ module Baran
 
       splits.each do |split|
         split_token_count = token_count(split)
-
-        # Check if this split contains a markdown table (for metadata/logging purposes)
-        tables = detect_markdown_tables(split)
-        tables.any?
 
         if total + split_token_count >= chunk_size && current_splits.length.positive?
           results << joined(current_splits, separator)
