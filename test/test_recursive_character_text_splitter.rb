@@ -39,10 +39,6 @@ class TestRecursiveCharacterTextSplitter < Minitest::Test
       ]
     )
     chunks = splitter.chunks(text)
-    puts "Chunks: #{chunks.size}"
-    chunks.each_with_index do |chunk, i|
-      puts "Chunk #{i + 1} (#{chunk[:text].length} chars): #{chunk[:text].inspect}"
-    end
     assert chunks.length == 4
   end
 end
