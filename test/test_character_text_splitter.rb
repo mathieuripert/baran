@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require 'minitest/unit'
+require 'minitest/autorun'
 require 'baran'
 
-MiniTest::Unit.autorun
-
-class TestCharacterTextSplitter < MiniTest::Unit::TestCase
+class TestCharacterTextSplitter < Minitest::Test
   def setup
     @splitter = Baran::CharacterTextSplitter.new(chunk_size: 10, chunk_overlap: 5)
   end

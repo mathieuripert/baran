@@ -149,9 +149,6 @@ module Baran
 
         current_splits << split
         total += split_token_count
-        if total > @chunk_size
-          Logger.new($stdout).warn("Created a chunk of size #{total}, which is longer than the specified #{@chunk_size}")
-        end
       end
 
       results << joined(current_splits, separator) unless current_splits.empty?

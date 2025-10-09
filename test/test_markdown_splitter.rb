@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require 'minitest/unit'
+require 'minitest/autorun'
 require 'baran'
 
-MiniTest::Unit.autorun
-
-class TestMarkdownSplitter < MiniTest::Unit::TestCase
+class TestMarkdownSplitter < Minitest::Test
   def setup
     @splitter = Baran::MarkdownSplitter.new
   end

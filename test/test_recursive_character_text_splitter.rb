@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require 'minitest/unit'
+require 'minitest/autorun'
 require_relative '../lib/baran'
 
-MiniTest::Unit.autorun
-
-class TestRecursiveCharacterTextSplitter < MiniTest::Unit::TestCase
+class TestRecursiveCharacterTextSplitter < Minitest::Test
   def test_basic_text_splitting
     text = "Hello world\n\nThis is a test\n\nWith multiple paragraphs"
     splitter = Baran::RecursiveCharacterTextSplitter.new(
